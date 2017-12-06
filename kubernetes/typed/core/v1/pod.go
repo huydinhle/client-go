@@ -37,6 +37,7 @@ type PodInterface interface {
 	Update(*v1.Pod) (*v1.Pod, error)
 	UpdateStatus(*v1.Pod) (*v1.Pod, error)
 	Delete(name string, options *meta_v1.DeleteOptions) error
+	DeletePod(pod *v1.Pod, options *meta_v1.DeleteOptions) error
 	DeleteCollection(options *meta_v1.DeleteOptions, listOptions meta_v1.ListOptions) error
 	Get(name string, options meta_v1.GetOptions) (*v1.Pod, error)
 	List(opts meta_v1.ListOptions) (*v1.PodList, error)
@@ -141,6 +142,17 @@ func (c *pods) Delete(name string, options *meta_v1.DeleteOptions) error {
 		Namespace(c.ns).
 		Resource("pods").
 		Name(name).
+		Body(options).
+		Do().
+		Error()
+}
+
+// Delete takes name of the pod and deletes it. Returns an error if one occurs.
+func (c *pods) DeletePod(pod *v1.Pod, options *meta_v1.DeleteOptions) error {
+	return c.client.Delete().
+		Namespace(pod.Namespace).
+		Resource("pods").
+		Name(pod.Name).
 		Body(options).
 		Do().
 		Error()
